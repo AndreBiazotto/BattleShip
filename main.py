@@ -34,9 +34,84 @@ class set_jogo():
 
         self.cont_abates = {"Porta-aviões": 0, "Couraçado": 0, "Cruzador": 0, "Submarino": 0, "Destroyer": 0}
         
-    def posicionar(self):
-        # Fazer esse metodo receber uma lista com as posiçoes e direçoes ou receber uma por vez
-        pass
+    def posicionar(self, barco: str, letra: str, numero: int, direcao: str):
+        # Receber uma posição por vez.
+        # Esperace uma coordenada, um tamanho e uma direção cardeal (N, S, L, O)
+
+        if barco not in self.navios.keys():
+            return "BARCO NÃO ENCONTRADO"
+        
+        if not self.navios[barco][0] == 0:
+            return "POSIÇÃO OCUPADA"
+        
+        tam = len(self.navios[barco])
+        if direcao == "N":
+            for t in range(tam):
+                if (numero - t) < 0:
+                    return "FORA DOS LIMITES"
+                
+                if self.mar_navios[numero - t][self.letras.index(letra)] != "0":
+                    return f"POSIÇÃO {numero - t}|{letra} OCUPADA"    
+            
+            self.navios[barco] = [f"{letra}{numero - t}" for t in range(tam)]
+
+            for coordenada in self.navios[barco]:
+                letra = coordenada[0]
+                numero = int(coordenada[1])
+                self.mar_navios[numero][self.letras.index(letra)] = "\033[93mN\033[00m"
+
+            return "ALOCADO"
+        
+        if direcao == "S":
+            for t in range(tam):
+                if (numero + t) > 7:
+                    return "FORA DOS LIMITES"
+                
+                if self.mar_navios[numero + t][self.letras.index(letra)] != "0":
+                    return f"POSIÇÃO {numero + t}|{letra} OCUPADA"    
+            
+            self.navios[barco] = [f"{letra}{numero + t}" for t in range(tam)]
+
+            for coordenada in self.navios[barco]:
+                letra = coordenada[0]
+                numero = int(coordenada[1])
+                self.mar_navios[numero][self.letras.index(letra)] = "\033[93mN\033[00m"
+
+            return "ALOCADO"
+        
+        if direcao == "O":
+            for t in range(tam):
+                if (self.letras.index(letra) - t) < 0:
+                    return "FORA DOS LIMITES"
+                
+                if self.mar_navios[numero][self.letras.index(letra) - t] != "0":
+                    return f"POSIÇÃO {numero - t}|{letra} OCUPADA"    
+            
+            self.navios[barco] = [f"{self.letras[self.letras.index(letra) - t]}{numero}" for t in range(tam)]
+
+            for coordenada in self.navios[barco]:
+                letra = coordenada[0]
+                numero = int(coordenada[1])
+                self.mar_navios[numero][self.letras.index(letra)] = "\033[93mN\033[00m"
+
+            return "ALOCADO"
+        
+        if direcao == "O":
+            for t in range(tam):
+                if (self.letras.index(letra) + t) > 7:
+                    return "FORA DOS LIMITES"
+                
+                if self.mar_navios[numero][self.letras.index(letra) + t] != "0":
+                    return f"POSIÇÃO {numero + t}|{letra} OCUPADA"    
+            
+            self.navios[barco] = [f"{self.letras[self.letras.index(letra) + t]}{numero}" for t in range(tam)]
+
+            for coordenada in self.navios[barco]:
+                letra = coordenada[0]
+                numero = int(coordenada[1])
+                self.mar_navios[numero][self.letras.index(letra)] = "\033[93mN\033[00m"
+
+            return "ALOCADO"
                 
 
     def desenhar_mapa(self, mapa: list):
@@ -48,4 +123,8 @@ class set_jogo():
         return desenho
 
 jogo = set_jogo()
-jogo.posicionar()
+resultado = jogo.posicionar("Cruzador", "C", 3, "O")
+print(resultado)
+resultado = jogo.posicionar("Cruzador", "A", 3, "N")
+print(resultado)
+print(jogo.desenhar_mapa(jogo.mar_navios))
